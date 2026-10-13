@@ -15,11 +15,22 @@ type HexPoint = {
 }
 export const HexagonLayer: FC<Props> = ({ data, controller }) => {
     const [selectedHex, setSelectedHex] = useState<HexPoint | null>(null);
+    const [deckLoaded, setDeckLoaded] = useState(false);
+    const [hasAnimated, sethasAnimated] = useState<Point[] | null>(null);
+    const hasLoadedAndAnimated = deckLoaded && hasAnimated === data;
+
     useEffect(() => {
         setSelectedHex(null);
-    }, [data])
+    }, [data]);
+
+    useEffect(() => {
+        if (!deckLoaded) return;
+        const id = requestAnimationFrame(() => sethasAnimated(data));
+        return () => cancelAnimationFrame(id);
+    }, [deckLoaded, data]);
 
     const overlay = useControl(() => new MapboxOverlay({
+        onLoad: () => setDeckLoaded(true),
         getTooltip: (data) =>  data.object && selectedHex == null ? `${controller.selectedType ?? "All Reports counts"}: ` +JSON.stringify(data.object.count) : null,
     }));
 
@@ -31,7 +42,7 @@ export const HexagonLayer: FC<Props> = ({ data, controller }) => {
                     data,
                     getPosition: ([lng, lat]) => [lng, lat],
                     radius: 200,
-                    elevationScale: 4,
+                    elevationScale: hasLoadedAndAnimated ? 4 : 0,
                     extruded: true,
                     pickable: true,
                     onClick: (data) => {
@@ -40,10 +51,11 @@ export const HexagonLayer: FC<Props> = ({ data, controller }) => {
                         return false;
                     },
                     highlightedObjectIndex: selectedHex?.index ?? -1,
+                    transitions: { elevationScale: hasLoadedAndAnimated ? { duration: 1200, easing: (t: number) => 1 - Math.pow(1 - t, 3) } : 0 },
                 }),
             ],
         });
-    }, [overlay, data, selectedHex]);
+    }, [overlay, data, selectedHex, hasLoadedAndAnimated]);
 
     return selectedHex ?
         <Popup
