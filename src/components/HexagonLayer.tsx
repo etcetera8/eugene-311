@@ -7,6 +7,10 @@ import { colorRangeForType } from "./hexColors";
 
 interface Props {
     data: Point[];
+    // Grow-in animation replays only when this changes, so time-lapse steps don't re-trigger it.
+    growKey: unknown;
+    // When set, keep the color/height scale from the full dataset instead of rescaling per step.
+    lockDomain: boolean;
     controller: Controller;
 }
 type HexPoint = {
@@ -14,11 +18,13 @@ type HexPoint = {
     latLong: number[],
     count: number,
 }
-export const HexagonLayer: FC<Props> = ({ data, controller }) => {
+export const HexagonLayer: FC<Props> = ({ data, growKey, lockDomain, controller }) => {
     const [selectedHex, setSelectedHex] = useState<HexPoint | null>(null);
     const [deckLoaded, setDeckLoaded] = useState(false);
-    const [hasAnimated, sethasAnimated] = useState<Point[] | null>(null);
-    const hasLoadedAndAnimated = deckLoaded && hasAnimated === data;
+    const [hasAnimated, sethasAnimated] = useState<unknown>(null);
+    const [fullDomain, setFullDomain] = useState<[number, number] | null>(null);
+    const hasLoadedAndAnimated = deckLoaded && hasAnimated === growKey;
+    const domain = lockDomain ? fullDomain : null;
     const colorRange = colorRangeForType(controller.selectedType);
 
     useEffect(() => {
@@ -27,9 +33,9 @@ export const HexagonLayer: FC<Props> = ({ data, controller }) => {
 
     useEffect(() => {
         if (!deckLoaded) return;
-        const id = requestAnimationFrame(() => sethasAnimated(data));
+        const id = requestAnimationFrame(() => sethasAnimated(growKey));
         return () => cancelAnimationFrame(id);
-    }, [deckLoaded, data]);
+    }, [deckLoaded, growKey]);
 
     const overlay = useControl(() => new MapboxOverlay({
         onLoad: () => setDeckLoaded(true),
@@ -45,6 +51,12 @@ export const HexagonLayer: FC<Props> = ({ data, controller }) => {
                     getPosition: ([lng, lat]) => [lng, lat],
                     radius: 200,
                     colorRange,
+                    colorDomain: domain,
+                    elevationDomain: domain,
+                    onSetElevationDomain: ([min, max]) => {
+                        if (lockDomain) return;
+                        setFullDomain(prev => prev?.[0] === min && prev?.[1] === max ? prev : [min, max]);
+                    },
                     elevationScale: hasLoadedAndAnimated ? 4 : 0,
                     extruded: true,
                     pickable: true,
@@ -58,7 +70,7 @@ export const HexagonLayer: FC<Props> = ({ data, controller }) => {
                 }),
             ],
         });
-    }, [overlay, data, selectedHex, hasLoadedAndAnimated, colorRange]);
+    }, [overlay, data, selectedHex, hasLoadedAndAnimated, colorRange, domain, lockDomain]);
 
     return selectedHex ?
         <Popup

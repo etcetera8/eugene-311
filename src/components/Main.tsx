@@ -6,6 +6,7 @@ import { Controller } from "../viewmodels/controller.viewmodel";
 import { CameraOrbit } from "./CameraOrbit";
 import { FilterSection } from "./FilterSection";
 import { HexagonLayer } from "./HexagonLayer";
+import { TimelapseControl } from "./TimelapseControl";
 
 export const Main = observer(() => {
     const [controller] = useState(() => new Controller());
@@ -26,8 +27,16 @@ export const Main = observer(() => {
                 mapStyle="https://tiles.openfreemap.org/styles/liberty"
             >
                 <CameraOrbit />
-                {controller.hasData && <HexagonLayer data={controller.filteredData} controller={controller} />}
+                {controller.hasData && (
+                    <HexagonLayer
+                        data={controller.filteredData}
+                        growKey={controller.baseData}
+                        lockDomain={controller.timeCursor !== null}
+                        controller={controller}
+                    />
+                )}
             </Map>
+            <TimelapseControl controller={controller} />
         </div>
     )
 })
