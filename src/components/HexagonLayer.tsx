@@ -1,8 +1,9 @@
 import { HexagonLayer as DeckHexagonLayer } from "@deck.gl/aggregation-layers";
 import { MapboxOverlay } from "@deck.gl/mapbox";
 import { useEffect, useState, type FC } from "react";
-import { useControl, Popup } from "react-map-gl/maplibre";
+import { Popup, useControl } from "react-map-gl/maplibre";
 import type { Controller, Point } from "../viewmodels/controller.viewmodel";
+import { colorRangeForType } from "./hexColors";
 
 interface Props {
     data: Point[];
@@ -18,6 +19,7 @@ export const HexagonLayer: FC<Props> = ({ data, controller }) => {
     const [deckLoaded, setDeckLoaded] = useState(false);
     const [hasAnimated, sethasAnimated] = useState<Point[] | null>(null);
     const hasLoadedAndAnimated = deckLoaded && hasAnimated === data;
+    const colorRange = colorRangeForType(controller.selectedType);
 
     useEffect(() => {
         setSelectedHex(null);
@@ -42,6 +44,7 @@ export const HexagonLayer: FC<Props> = ({ data, controller }) => {
                     data,
                     getPosition: ([lng, lat]) => [lng, lat],
                     radius: 200,
+                    colorRange,
                     elevationScale: hasLoadedAndAnimated ? 4 : 0,
                     extruded: true,
                     pickable: true,
@@ -55,7 +58,7 @@ export const HexagonLayer: FC<Props> = ({ data, controller }) => {
                 }),
             ],
         });
-    }, [overlay, data, selectedHex, hasLoadedAndAnimated]);
+    }, [overlay, data, selectedHex, hasLoadedAndAnimated, colorRange]);
 
     return selectedHex ?
         <Popup
