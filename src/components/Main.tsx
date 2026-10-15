@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import Map from "react-map-gl/maplibre";
 import { Controller } from "../viewmodels/controller.viewmodel";
+import { CameraOrbit } from "./CameraOrbit";
 import { FilterSection } from "./FilterSection";
 import { HexagonLayer } from "./HexagonLayer";
 
@@ -24,6 +25,7 @@ export const Main = observer(() => {
                 style={{ width: '100%', height: '100%' }}
                 mapStyle="https://tiles.openfreemap.org/styles/liberty"
             >
+                <CameraOrbit />
                 {controller.hasData && <HexagonLayer data={controller.filteredData} controller={controller} />}
             </Map>
         </div>
