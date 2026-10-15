@@ -3,7 +3,7 @@
 import { createReadStream, writeFileSync } from "node:fs";
 import { createInterface } from "node:readline";
 
-const input = process.argv[2] ?? "public/Customer_Service_Requests_20261002.csv";
+const input = process.argv[2] ?? "data/Customer_Service_Requests_20261002.csv";
 const output = process.argv[3] ?? "public/requests.json";
 
 function parseLine(line) {

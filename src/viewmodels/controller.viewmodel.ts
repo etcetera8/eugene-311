@@ -108,7 +108,7 @@ export class Controller {
     }
 
     private fetchData() {
-        fetch("/requests.json")
+        fetch(`${import.meta.env.BASE_URL}requests.json`)
             .then((res) => res.json())
             .then((cityData: CityData) => runInAction(() => {
                 this.types = [...cityData.types];
