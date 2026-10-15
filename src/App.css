@@ -6,7 +6,7 @@
   position: absolute;
   top: 16px;
   left: 16px;
-  z-index: 1;
+  z-index: 5;
   width: 288px;
   display: flex;
   flex-direction: column;
@@ -36,4 +36,52 @@
 
 .maplibregl-popup {
   z-index: 3;
+}
+
+.timelapse {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  width: min(560px, calc(100% - 32px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.timelapse-date {
+  font-size: 32px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-h);
+  text-shadow: 0 0 8px var(--bg), 0 0 2px var(--bg);
+}
+
+.timelapse-controls {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  box-sizing: border-box;
+}
+
+.timelapse-controls input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent);
+}
+
+.timelapse-controls button {
+  font: inherit;
+  font-size: 14px;
+  min-width: 36px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  cursor: pointer;
 }
