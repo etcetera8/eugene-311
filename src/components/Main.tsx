@@ -1,4 +1,7 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { setWorkerUrl } from "maplibre-gl";
+// Mbundle it explicitly for runtime loading
+import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import Map from "react-map-gl/maplibre";
@@ -7,6 +10,8 @@ import { CameraOrbit } from "./CameraOrbit";
 import { FilterSection } from "./FilterSection";
 import { HexagonLayer } from "./HexagonLayer";
 import { TimelapseControl } from "./TimelapseControl";
+
+setWorkerUrl(maplibreWorkerUrl);
 
 export const Main = observer(() => {
     const [controller] = useState(() => new Controller());
