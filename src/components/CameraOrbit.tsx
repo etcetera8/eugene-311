@@ -8,7 +8,7 @@ interface Props {
 
 const INTERACTION_EVENTS = ["mousedown", "touchstart", "wheel"] as const;
 
-export const CameraOrbit: FC<Props> = ({ degreesPerSecond = 3, resumeAfterMs = 15000 }) => {
+export const CameraOrbit: FC<Props> = ({ degreesPerSecond = 3, resumeAfterMs = 20000 }) => {
     const { current: mapRef } = useMap();
 
     useEffect(() => {
